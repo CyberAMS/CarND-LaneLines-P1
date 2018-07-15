@@ -22,9 +22,9 @@ My pipeline consisted of the following major steps:
 1. Use linear regression on all points of the left and right lines to determine the left and right lane markers
 1. Optional: Plot lane markers in the original image (see thrid image below). This is also the output of the pipeline.
 
-![First image][output_16_1.png]
-![Second image][output_16_3.png]
-![Thirs image][output_16_4.png]
+![First image](https://github.com/CyberAMS/CarND-LaneLines-P1/blob/master/output_16_1.png "First image")
+![Second image](https://github.com/CyberAMS/CarND-LaneLines-P1/blob/master/output_16_3.png "Second image")
+![Third image](https://github.com/CyberAMS/CarND-LaneLines-P1/blob/master/output_16_4.png "Third image")
 
 
 ### 2. Potential shortcomings with this pipeline
