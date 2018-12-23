@@ -1,56 +1,41 @@
 # **Finding Lane Lines on the Road** 
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
-<img src="examples/laneLines_thirdPass.jpg" width="480" alt="Combined Image" />
-
-Overview
----
-
-When we drive, we use our eyes to decide where to go.  The lines on the road that show us where the lanes are act as our constant reference for where to steer the vehicle.  Naturally, one of the first things we would like to do in developing a self-driving car is to automatically detect lane lines using an algorithm.
-
-In this project you will detect lane lines in images using Python and OpenCV.  OpenCV means "Open-Source Computer Vision", which is a package that has many useful tools for analyzing images.  
-
-To complete the project, two files will be submitted: a file containing project code and a file containing a brief write up explaining your solution. We have included template files to be used both for the [code](https://github.com/udacity/CarND-LaneLines-P1/blob/master/P1.ipynb) and the [writeup](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md).The code file is called P1.ipynb and the writeup template is writeup_template.md 
-
-To meet specifications in the project, take a look at the requirements in the [project rubric](https://review.udacity.com/#!/rubrics/322/view)
+The goals / steps of this project are the following:
+* Make a pipeline that finds lane lines on the road
+* Reflect on your work in a written report
 
 
-Creating a Great Writeup
----
-For this project, a great writeup should provide a detailed response to the "Reflection" section of the [project rubric](https://review.udacity.com/#!/rubrics/322/view). There are three parts to the reflection:
-
-1. Describe the pipeline
-
-2. Identify any shortcomings
-
-3. Suggest possible improvements
-
-We encourage using images in your writeup to demonstrate how your pipeline works.  
-
-All that said, please be concise!  We're not looking for you to write a book here: just a brief description.
-
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup. Here is a link to a [writeup template file](https://github.com/udacity/CarND-LaneLines-P1/blob/master/writeup_template.md). 
+### Reflection
 
 
-The Project
----
+### 1. Pipeline description
 
-## If you have already installed the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) you should be good to go!   If not, you should install the starter kit to get started on this project. ##
+I tried to keep the script as flexible as possible, so it could be easily reused for future projects with different image sizes and content. Therefore, all relevant parameters are defined outside of the pipeline function.
 
-**Step 1:** Set up the [CarND Term1 Starter Kit](https://classroom.udacity.com/nanodegrees/nd013/parts/fbf77062-5703-404e-b60c-95b78b2f3f9e/modules/83ec35ee-1e02-48a5-bdb7-d244bd47c2dc/lessons/8c82408b-a217-4d09-b81d-1bda4c6380ef/concepts/4f1870e0-3849-43e4-b670-12e6f2d4b7a7) if you haven't already.
+My pipeline consisted of the following major steps:
 
-**Step 2:** Open the code in a Jupyter Notebook
+1. Convert the image to grascale, reduce noise and detect edges with Canny
+1. Focus on the most likely area for lane markers and identify lines with Hough transform
+1. Optional: Plot all lines in a gray scale image (see first image below)
+1. Separate left and right lines using a K-means algorithm, a likely slope range as well as separation by the center of the focus area
+1. Optional: Plot all relevant left and right lines in the original image (see second image below)
+1. Use linear regression on all points of the left and right lines to determine the left and right lane markers
+1. Optional: Plot lane markers in the original image (see thrid image below). This is also the output of the pipeline.
 
-You will complete the project code in a Jupyter notebook.  If you are unfamiliar with Jupyter Notebooks, check out <A HREF="https://www.packtpub.com/books/content/basics-jupyter-notebook-and-python" target="_blank">Cyrille Rossant's Basics of Jupyter Notebook and Python</A> to get started.
+![First image](https://github.com/CyberAMS/CarND-LaneLines-P1/blob/master/output_16_1.png "First image")
+![Second image](https://github.com/CyberAMS/CarND-LaneLines-P1/blob/master/output_16_3.png "Second image")
+![Third image](https://github.com/CyberAMS/CarND-LaneLines-P1/blob/master/output_16_4.png "Third image")
 
-Jupyter is an Ipython notebook where you can run blocks of code and see results interactively.  All the code for this project is contained in a Jupyter notebook. To start Jupyter in your browser, use terminal to navigate to your project directory and then run the following command at the terminal prompt (be sure you've activated your Python 3 carnd-term1 environment as described in the [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit/blob/master/README.md) installation instructions!):
 
-`> jupyter notebook`
+### 2. Potential shortcomings with this pipeline
 
-A browser window will appear showing the contents of the current directory.  Click on the file called "P1.ipynb".  Another browser window will appear displaying the notebook.  Follow the instructions in the notebook to complete the project.  
+The pipeline works well for images in which the road has clear lane markers and the road surface itself has a homogeneous color. In the case of varying road surfaces and influences from other objects like driving from sunny conditions into shade, the pipeline picks up edges and lines that are also in the driving direction, but no lane markers.
 
-**Step 3:** Complete the project and submit both the Ipython notebook and the project writeup
+Another shotcoming of this pipeline is that it requires that you drive pretty much in the middle of a lane. In case you leave the lane, the algorithm wouldn't detect the correct lane markers and there is no way for the vehicle to know how to get back into the necessary position in the lane.
 
-## How to write a README
-A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
 
+### 3. Possible improvements to this pipeline
+
+My current pipeline does not consider past images as I tried to keep the video processing function unchanged. Leveraging the fact that the vehicle cannot change its position relative to the lane too quickly, one could assume that the lane markers of the next video frame image should be very similar to the previous one. This would allow to overcome short periods of what the current pipeline experiences as unclear lane markers.
+
+This pipeline could be used with several mask areas in which you look for lane markers. Besides the position in the middle lane, these mask areas would consider being out to the left or right and look for lane markers considering this perspective. This would allow to find lane markers when being outside of the center position in a lane, e.g. during lane change maneuvers. A logic would be required to determine the most likely perspective to pick the correct interpretation of lane markers.
